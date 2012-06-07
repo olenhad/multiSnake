@@ -5,7 +5,7 @@ var constants = require("./Game/constants");
 var collisions = require("./Game/collisions");
 var events = require("./Game/events");
 var fs = require("fs");
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 var gameObjects = [];
 var numSnakes =0;
 var GAME_SPEED = 100;
