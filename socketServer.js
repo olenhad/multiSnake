@@ -1,4 +1,5 @@
-var app = require('express').createServer();
+var express = require('express');
+var app = express.createServer();
 var io = require("socket.io").listen(app);
 var models = require("./Game/models");
 var constants = require("./Game/constants");
@@ -6,6 +7,7 @@ var collisions = require("./Game/collisions");
 var events = require("./Game/events");
 var fs = require("fs");
 app.listen(process.env.PORT || 3000);
+app.use(express.bodyParser());
 var gameObjects = [];
 var numSnakes =0;
 var GAME_SPEED = 101;
@@ -57,7 +59,18 @@ app.get('/numSnakes',function(req,res){
 	res.write(numSnakes.toString());
 	res.end();
 });
-
+app.post('/exitSnake',function(req,res){
+	var obj = req.body;
+		try{
+		gameObjects.splice(obj.num);
+	}catch(e){
+		console.log(e);
+	}
+	res.writeHead(200,{"Content-Type":"text/html"});
+	res.write(JSON.stringify(gameObjects));
+	res.end();	
+	res.send("ok");
+});
 function updateGameStates(){
 	//console.log("entering updatingGameStates()");
 	for(var index in gameObjects){
