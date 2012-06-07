@@ -8,7 +8,7 @@ var fs = require("fs");
 app.listen(process.env.PORT || 3000);
 var gameObjects = [];
 var numSnakes =0;
-var GAME_SPEED = 100;
+var GAME_SPEED = 101;
 var firstCall = true;
 app.get('/',function(req,response){
 	    fs.readFile('./snakeS.html', function(error, content) {
