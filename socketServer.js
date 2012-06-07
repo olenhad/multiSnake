@@ -5,10 +5,10 @@ var constants = require("./Game/constants");
 var collisions = require("./Game/collisions");
 var events = require("./Game/events");
 var fs = require("fs");
-app.listen(3000);
+app.listen(80);
 var gameObjects = [];
 var numSnakes =0;
-var GAME_SPEED = 50;
+var GAME_SPEED = 100;
 var firstCall = true;
 app.get('/',function(req,response){
 	    fs.readFile('./snakeS.html', function(error, content) {
