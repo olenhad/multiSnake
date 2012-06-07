@@ -1,0 +1,40 @@
+info it worked if it ends with ok
+verbose cli [ 'E:\\nodejs\\\\node.exe',
+verbose cli   'E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+verbose cli   'install',
+verbose cli   'mongodb' ]
+info using npm@1.1.21
+info using node@v0.6.18
+verbose E:\nodejs\\node.exe node symlink
+verbose config file C:\Users\muhammad-omer.iqbal\.npmrc
+verbose config file E:\nodejs\etc\npmrc
+verbose config file E:\nodejs\node_modules\npm\npmrc
+verbose caching C:\Users\muhammad-omer.iqbal\olenhad-snakeMulti-f3662ac\olenhad-snakeMulti-f3662ac\node_modules\mongoose\package.json
+verbose cache add [ 'mongodb', null ]
+silly cache add: name, spec, args [ undefined, 'mongodb', [ 'mongodb', null ] ]
+verbose parsed url { pathname: 'mongodb', path: 'mongodb', href: 'mongodb' }
+verbose addNamed [ 'mongodb', '' ]
+verbose addNamed [ null, '' ]
+silly name, range, hasData [ 'mongodb', '', false ]
+verbose raw, before any munging mongodb
+verbose url resolving [ 'https://registry.npmjs.org/', './mongodb' ]
+verbose url resolved https://registry.npmjs.org/mongodb
+http GET https://registry.npmjs.org/mongodb
+ERR! Error: connect ETIMEDOUT
+ERR!     at errnoException (net.js:670:11)
+ERR!     at Object.afterConnect [as oncomplete] (net.js:661:19)
+ERR! You may report this log at:
+ERR!     <http://github.com/isaacs/npm/issues>
+ERR! or email it to:
+ERR!     <npm-@googlegroups.com>
+ERR! 
+ERR! System Windows_NT 5.1.2600
+ERR! command "E:\\nodejs\\\\node.exe" "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "mongodb"
+ERR! cwd C:\Users\muhammad-omer.iqbal\olenhad-snakeMulti-f3662ac\olenhad-snakeMulti-f3662ac
+ERR! node -v v0.6.18
+ERR! npm -v 1.1.21
+ERR! syscall connect
+ERR! code ETIMEDOUT
+ERR! message connect ETIMEDOUT
+ERR! errno {}
+verbose exit [ 1, true ]

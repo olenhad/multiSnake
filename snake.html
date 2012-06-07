@@ -1,0 +1,358 @@
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type = "text/javascript"></script>
+	<script type ="application/javascript">
+	/*arrow keys move sprite
+	queue of coordinates
+	collision with fruit increases length
+	*/
+    var boardSize=400;
+    var gameState="play";
+	document.addEventListener('keydown',function(event){
+    
+
+
+		var x = snake.path[snake.path.length-1].x1;
+    	var y = snake.path[snake.path.length-1].y1;
+      updateArray();  
+    switch(event.keyCode){
+
+      case 65:
+        //moveLeft();
+        //console.log("left");
+        if(snake.state!="right")
+        snake.state="left";
+        break;
+      case 87:
+      	//moveUp();
+        if(snake.state!="down")
+        snake.state="up";
+        break;
+      case 68:
+       // moveRight();
+       if(snake.state!="left")
+        snake.state="right";
+        break;
+      case 83:
+       // moveDown();
+       if(snake.state!="up"){
+        snake.state="down";
+        
+       }
+        
+        break
+      case 76:
+      	lengthen();
+      	console.log("lengthening");
+      	break;
+      case 13:
+        restartGame();
+
+    }
+   // snake.path[snake.path.length-1].x1=x;
+  //  snake.path[snake.path.length-1].y1 =y;
+
+    if(gameState==="play"){
+    //drawSnake(snake);
+  }
+
+   }); 
+	var size = 100;
+	var map = new Array(size);
+     for (var i = 0; i < size; i++) {
+    	map[i] = new Array(size);
+    }
+    var Coord = function(x,y){
+    	this.x1=x;
+    	this.y1=y;
+    };
+    var velocity = 0.5;
+    var Snake = function(initLength){
+    	this.sLength = initLength;
+    	this.path= new Array(initLength);
+    	this.colorString1="rgb(107,142,35)";
+    	this.colorSring2="rgb(128,0,0)";
+    	this.sSize = 10;
+      this.sizeInc=10;
+
+
+    };
+    var Food = function(x,y,size){
+        this.coord = new Coord(x,y);
+        this.fSize= size;
+    };
+/*
+[][][][]
+[][1][1][1]  
+[][][][]
+[][][][]
+
+[][][][]
+[][][][1]
+[][1][1][1]
+[][][][]
+*/
+function generateFood(food){
+  var x=Math.floor(Math.random()*390);
+  var y=Math.floor(Math.random()*390);
+  food.coord.x1=x;
+  food.coord.y1=y;
+
+
+};
+function restartGame(){
+
+  gameState="play";
+  score=0;
+   clearInterval(drawIntervalID);
+   clearInterval(collisionIntervalID);
+
+   drawIntervalID=setInterval(drawInterval,gameRate);
+      collisionIntervalID= setInterval(collisionEngine,collisionRate);
+            snake = new Snake(1);
+      food = new Food(200,200,20);
+    currentCoord0 = new Coord(15,15);
+    currentCoord1 = new Coord(15+snake.sSize,15);
+    currentCoord2 = new Coord(15+snake.sSize*2,15);
+    snake.path[0]= currentCoord0;
+    updateLeaderBoard();
+      
+
+};
+
+    function updateArray(){
+        var copyPath = new Array(snake.path.length);
+        for(var i=0;i<snake.path.length;i++){
+          copyPath[i] = new Coord(snake.path[i].x1,snake.path[i].y1);
+        }
+        for(var i=0;i<snake.path.length-1;i++){
+        snake.path[i].y1 = copyPath[i+1].y1;
+        snake.path[i].x1 = copyPath[i+1].x1;
+      }
+    };
+ 		function moveLeft(){
+      
+ 			
+ 			
+      snake.path[snake.path.length-1].x1 -=snake.sSize;
+      boundaryCheck();
+ 		};
+ 		 function moveRight(){
+      
+ 				
+ 			
+      snake.path[snake.path.length-1].x1 +=snake.sSize;
+       boundaryCheck();
+ 			
+
+ 		};
+ 		function moveUp(){
+      		
+ 			
+      snake.path[snake.path.length-1].y1 -=snake.sSize;
+      boundaryCheck();
+ 		};
+ 		function moveDown(){
+      				
+ 			
+      snake.path[snake.path.length-1].y1 +=snake.sSize;
+      boundaryCheck();
+ 		};
+    function boundaryCheck(){
+      if(snake.path[snake.path.length-1].y1 <= 0 ){
+        snake.path[snake.path.length-1].y1 = boardSize; 
+      }
+       else if(snake.path[snake.path.length-1].x1 <= 0 ){
+        snake.path[snake.path.length-1].x1 = boardSize; 
+      }
+      else{
+        snake.path[snake.path.length-1].x1=  snake.path[snake.path.length-1].x1%boardSize;
+       snake.path[snake.path.length-1].y1=  snake.path[snake.path.length-1].y1%boardSize;
+      }
+
+    };
+
+   	function drawSnake(snakeO){
+   		var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    		       ctx.clearRect(0,0,400,400);
+    		ctx.fillStyle = snakeO.colorString1;
+    		ctx.fillRect(snakeO.path[snakeO.sLength-1].x1,snakeO.path[snakeO.sLength-1].y1,snakeO.sSize,snakeO.sSize);
+    		
+    		ctx.fillStyle= snakeO.colorString2;
+
+    		for(var i =0;i<snakeO.sLength-1;i++){
+    			ctx.fillRect(snakeO.path[i].x1,snakeO.path[i].y1,snakeO.sSize,snakeO.sSize);
+
+    		}
+        ctx.fillStyle = "rgb(196,85,79)";
+        ctx.fillRect(food.coord.x1,food.coord.y1,food.fSize,food.fSize);
+
+    	};
+    
+  function lengthen(){
+	    	
+	    	coord= new Coord(snake.path[snake.path.length-1].x1,snake.path[snake.path.length-1].y1);
+	    	snake.sLength++;
+	    	switch(snake.state){
+	    		
+	    		case "up":
+	    		coord.y1-=snake.sSize;
+	    		break;
+	    		case "down":
+	    		coord.y1+=snake.sSize;
+	    		break;
+	    		case "right":
+	    		coord.x1+=snake.sSize;
+	    		break;
+	    		case "left":
+	    		coord.x1-=snake.sSize;
+	    		break;
+
+
+	    	}
+	    	snake.path.push(coord);
+
+
+    	};
+  function drawInterval(){
+      updateArray();
+       switch(snake.state){
+          
+          case "up":
+          moveUp();
+          break;
+          case "down":
+          moveDown();
+          break;
+          case "right":
+          moveRight();
+          break;
+          case "left":
+          moveLeft();
+          break;
+
+
+        }
+        
+        drawSnake(snake);   
+
+  }
+  var score=0;
+  function collisionEngine(){
+    if(foodCollision()===true){
+          lengthen();
+          generateFood(food);
+          score++;
+          var scorebox=document.getElementById("score");
+          scorebox.innerText=score;
+        }
+        if(selfCollision()===true){
+          console.log("collide");
+          gameState="stop";
+          endMessage(); 
+
+        }
+  }
+  function endMessage(){
+    var usernameForm = document.getElementById("usernameForm");
+    var username = usernameForm.username.value;
+    $.get("/score="+score+"&username="+username);
+    var scorebox = document.getElementById("score");
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    clearInterval(drawIntervalID);
+    clearInterval(collisionIntervalID);
+
+    ctx.clearRect(0,0,400,400);
+     ctx.font = "20px Times New Roman";  
+  ctx.fillStyle = "Black";  
+  ctx.fillText("You LOST with "+"Score "+score, 5, 30);
+    scorebox.innerText="END";
+   }  
+
+			snake = new Snake(1);
+      food = new Food(200,200,20);
+    currentCoord0 = new Coord(15,15);
+    currentCoord1 = new Coord(15+snake.sSize,15);
+    currentCoord2 = new Coord(15+snake.sSize*2,15);
+    snake.path[0]= currentCoord0;
+    //snake.path[1]=currentCoord1;
+    //asnake.path[2]=currentCoord2;
+  var gameRate = 25;//25 is good
+  var collisionRate=25;
+  var drawIntervalID;
+  var collisionIntervalID;
+	function Game(){	
+    updateLeaderBoard();
+		var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+	   
+
+		//	ctx.clearRect(0,0,400,400);
+    
+      drawIntervalID=setInterval(drawInterval,gameRate);
+      collisionIntervalID= setInterval(collisionEngine,collisionRate);
+      
+       
+
+      
+    
+  
+			drawSnake(snake);
+
+	
+	};
+  function foodCollision(){
+    if(snake.path[snake.path.length-1].x1+snake.sSize>= food.coord.x1 && snake.path[snake.path.length-1].x1<=food.coord.x1+food.fSize){
+      if(snake.path[snake.path.length-1].y1+snake.sSize>=food.coord.y1 && snake.path[snake.path.length-1].y1<= food.coord.y1+food.fSize){
+        return true;
+      }
+      return false;
+    }
+    return false;
+
+  };
+  function selfCollision(){
+    var collision =false;
+    for(var i=0;i<snake.path.length-1;i++){
+
+      
+
+           if(snake.path[snake.path.length-1].x1+snake.sSize> snake.path[i].x1 && snake.path[snake.path.length-1].x1<snake.path[i].x1+snake.sSize){
+                if(snake.path[snake.path.length-1].y1+snake.sSize>snake.path[i].y1 && snake.path[snake.path.length-1].y1< snake.path[i].y1+snake.sSize){
+                   return true;
+                }
+                
+              }
+
+         
+      
+    }
+    return collision;   
+ 
+  };
+  function updateLeaderBoard(){
+    $.get('/allscores',function(data){
+      document.getElementById("leaderboard").innerText = data;
+    });
+
+  }
+
+	
+	</script>
+</head>
+<body onload="Game();">
+	<canvas id="canvas" width="400" height="400">
+	</canvas>
+  <div id="score">
+    Score
+  </div>
+  <form id="usernameForm">
+    Username <input type="text" name="username"/>
+  </form>
+  <div id="leaderboard">
+    leaderboard
+  </div>
+  
+</html>

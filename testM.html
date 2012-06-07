@@ -1,0 +1,73 @@
+<html>
+<head>
+	 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type = "text/javascript"></script>
+	<script type="application/javascript">
+	var NUM_PLAYER=0;
+    var GOLDEN = 0;
+    var GAME_RATE=25;
+	function init(){
+		$.get('/numReqs',function(data){
+      NUM_PLAYER = parseInt(data);
+    });
+    getID= setInterval(sendData,GAME_RATE);
+    
+
+	}
+    function sendData(){
+        var obj ={num:NUM_PLAYER,gold:GOLDEN};
+        $.ajax({
+            type: 'POST',
+            data:obj,
+            url: '/recieveNum',
+            success:function(data){
+                render(data);
+                },
+            dataType:"json"
+            
+            })
+    }
+   
+    document.addEventListener('keydown',function(event){
+    
+	
+    switch(event.keyCode){
+
+      case 65:
+        moveLeft();
+        console.log("left");
+        break
+ 
+      case 68:
+       moveRight();
+       console.log("right");
+        break;
+
+    }
+      
+    //sendData();
+    });  
+    
+function moveLeft(){
+    GOLDEN++;
+    
+};
+function render(data){
+    document.getElementById("upload").innerText=data;
+    document.getElementById("local").innerText=GOLDEN;
+}
+function moveRight(){
+    GOLDEN--;
+    
+};
+	</script> 
+</head>
+
+<body onload="init();";>
+	<div id="upload">
+        initiing
+
+	</div>
+    <div id="local">
+    </div>
+	</body>
+</html>

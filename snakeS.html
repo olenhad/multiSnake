@@ -1,0 +1,239 @@
+<html>
+<head>
+	  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type = "text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+	<script type ="application/javascript">
+	var SNAKE_SIZE = 10;
+	var INIT_CORD_X = 15;
+	var INIT_CORD_Y = 15;
+	var BOARD_SIZE = 400;
+	var NUM_PLAYERS = 0;
+	var COLOR_SNAKE = "rgb(107,142,35)";
+	var GAME_RATE = 30;
+  var RENDER_RATE = 25;
+	var localState = null;
+	var g_gameObjects = null;
+	function Game(){
+		//load map, determine size, add snakes, start gameLoop, add input
+		
+		
+		$.get("/numSnakes",function(data){
+      NUM_PLAYERS = parseInt(data);
+
+       
+     // var sendStateID = setInterval(sendSnakeState,GAME_RATE);
+      var renderID = setInterval(function(){ render(g_gameObjects);},RENDER_RATE);
+     //gameLoop();
+      //sendSnakeState();
+      var socket = io.connect('http://localhost');
+      socket.on('gameObjects',function (data){
+        g_gameObjects = data;
+        socket.emit('recieveState',{num:NUM_PLAYERS,state:t_state});
+      });
+    });
+
+
+	};
+	function collisionEngine(){
+		//check for collisions
+	};
+	function render(gameObjects){
+		var canvas = document.getElementById("canvas");
+    	var ctx = canvas.getContext("2d");
+    	ctx.clearRect(0,0,400,400);
+    	for( var index in gameObjects){
+    		if(gameObjects[index]!=null){
+
+
+    		ctx.fillStyle = gameObjects[index].entity.colorString;
+    		for(var i in gameObjects[index].entity.posSet){
+    			var trect =gameObjects[index].entity.posSet[i];
+    			ctx.fillRect(trect.x,trect.y,trect.w,trect.h);
+    		}
+    	}
+    	}
+
+
+
+	};
+	function endState(){
+
+	};
+	var renderID =null;
+  var renderFlag = true;
+	function gameLoop(){
+		var gameObjects = null;
+    /*
+		$.get('/getGameObjects',function(data){
+			gameObjects = JSON.parse(data);
+			
+      /*if(renderFlag){
+        renderID = setInterval(render(g_gameObjects),RENDER_RATE);
+        renderFlag = false;
+      }
+			g_gameObjects = gameObjects;
+
+		});*/
+      
+    $.ajax({
+      url:'/getGameObjects',
+      success: function(data){
+        g_gameObjects = JSON.parse(data);
+      },
+      complete:gameLoop
+    });
+
+
+
+
+
+
+	};
+	var Coord = function(x,y){
+    	this.x=x;
+    	this.y=y;
+    };
+    var Rect = function(x,y,w,h){
+    	this.x =x;
+    	this.y= y;
+    	this.w=w;
+    	this.h =h;
+    };
+
+	var Entity = function(id,arrayRect){
+		this.posSet = arrayRect;
+		this.id = id;
+	};
+	var Snake = function(id,initLength){
+		
+		this.sSize = SNAKE_SIZE;
+		var temp = new Array(initLength);
+		var tempRect = new Rect(INIT_CORD_X, INIT_CORD_Y, SNAKE_SIZE, SNAKE_SIZE);
+		for(var i=0; i< initLength; i++){
+			temp[i] = new Rect(INIT_CORD_X+i*SNAKE_SIZE, INIT_CORD_Y, SNAKE_SIZE, SNAKE_SIZE);
+
+		}
+		this.entity = new Entity(id,temp);
+	};
+	var FoodSingle = function(id,x,y,size){
+		var temp = new Array(1);
+		temp[0] = new Rect(x,y,size,size);
+		this.entity = new Entity(id,temp);
+
+	};
+
+	
+
+	var t_state= null;
+	function sendSnakeState(){
+		var stateVar = {num:NUM_PLAYERS,state:t_state};
+		       $.ajax({
+            type: 'POST',
+            data:stateVar,
+            url: '/recieveSnakeState',
+            success: function(data){
+                g_gameObjects = JSON.parse(data);
+                },
+            complete: sendSnakeState,
+            timeout:2000,
+            
+            
+            })
+
+
+	};
+  function sendLengthen(){
+    var testL = {num:NUM_PLAYERS};
+               $.ajax({
+            type: 'POST',
+            data:testL,
+            url: '/testLengthen',
+            success:function(data){
+               
+                },
+            dataType:"json"
+            
+            })
+  }
+  function getSnakeScore(){
+    var testL = {num:NUM_PLAYERS};
+    
+  }
+	document.addEventListener('keydown',function(event){
+    
+
+
+		
+   switch(event.keyCode){
+
+      case 65:
+        //moveLeft();
+        //console.log("left");
+        if(t_state!="right")
+        t_state="left";
+        break;
+      case 87:
+      	//moveUp();
+        if(t_state!="down")
+        t_state="up";
+        break;
+      case 68:
+       // moveRight();
+       if(t_state!="left")
+       t_state="right";
+        break;
+      case 83:
+       // moveDown();
+       if(t_state!="up"){
+        t_state="down";
+        
+       }
+        
+        break
+      case 76:
+      	sendLengthen();
+      	console.log("lengthening");
+      	break;
+      case 13:
+        restartGame();
+
+    }
+
+ 
+
+   }); 
+  function sendExit(){
+        var testL = {num:NUM_PLAYERS};
+               $.ajax({
+            type: 'POST',
+            data:testL,
+            url: '/exitSnake',
+            success:function(data){
+               
+                },
+            
+            
+            })
+  }
+    /*
+    $(window).bind("beforeunload",function(){
+      sendExit();
+      console.log("exit");
+      return confirm("you sure");
+    })*/
+	</script>
+</head>
+<body onload="Game();">
+	<canvas id="canvas" width="400" height="400">
+	</canvas>
+  <div id="score">
+    Score
+  </div>
+  <form id="usernameForm">
+    Username <input type="text" name="username"/>
+  </form>
+  <div id="leaderboard">
+    leaderboard
+  </div>
+  
+</html>
